@@ -13,11 +13,13 @@ public class MeCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 1)  {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         StringBuilder message = new StringBuilder();
@@ -30,6 +32,8 @@ public class MeCommand extends VanillaCommand {
 
         Bukkit.broadcastMessage("* " + message.toString());
 
-        return true;
+        commandSuccess = true;
+
+        return SuccessType.getType(true, commandSuccess);
     }
 }

@@ -20,8 +20,10 @@ public class ExpCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         if (args.length > 0) {
             String inputAmount = args[0];
@@ -57,22 +59,24 @@ public class ExpCommand extends VanillaCommand {
                 } else {
                     if (isTaking) {
                         sender.sendMessage(ChatColor.RED + "Taking experience can only be done by levels, cannot give players negative experience points");
-                        return false;
+                        return SuccessType.getType(false, commandSuccess);
                     } else {
                         player.giveExp(amount);
                         Command.broadcastCommandMessage(sender, "Given " + amount + " experience to " + player.getName());
                     }
                 }
+
+                commandSuccess = true;
             } else {
                 sender.sendMessage("Can't find player, was one provided?\n" + ChatColor.RED + "Usage: " + usageMessage);
-                return false;
+                return SuccessType.getType(false, commandSuccess);
             }
 
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-        return false;
+        return SuccessType.getType(false, commandSuccess);
     }
 
     @Override

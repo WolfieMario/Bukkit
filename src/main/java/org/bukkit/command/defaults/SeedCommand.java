@@ -18,8 +18,10 @@ public class SeedCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         long seed;
         if (sender instanceof Player) {
             seed = ((Player) sender).getWorld().getSeed();
@@ -27,7 +29,8 @@ public class SeedCommand extends VanillaCommand {
             seed = Bukkit.getWorlds().get(0).getSeed();
         }
         sender.sendMessage("Seed: " + seed);
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

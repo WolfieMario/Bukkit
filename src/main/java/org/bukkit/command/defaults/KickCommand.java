@@ -20,11 +20,13 @@ public class KickCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 1 || args[0].length() == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         Player player = Bukkit.getPlayerExact(args[0]);
@@ -38,11 +40,12 @@ public class KickCommand extends VanillaCommand {
 
             player.kickPlayer(reason);
             Command.broadcastCommandMessage(sender, "Kicked player " + player.getName() + ". With reason:\n" + reason);
+            commandSuccess = true;
         } else {
             sender.sendMessage( args[0] + " not found.");
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

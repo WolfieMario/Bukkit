@@ -21,8 +21,10 @@ public class ToggleDownfallCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         World world = null;
 
@@ -31,7 +33,7 @@ public class ToggleDownfallCommand extends VanillaCommand {
 
             if (world == null) {
                 sender.sendMessage(ChatColor.RED + "No world exists with the name '" + args[0] + "'");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
         } else if (sender instanceof Player) {
             world = ((Player) sender).getWorld();
@@ -42,7 +44,8 @@ public class ToggleDownfallCommand extends VanillaCommand {
         Command.broadcastCommandMessage(sender, "Toggling downfall " + (world.hasStorm() ? "off" : "on") + " for world '" + world.getName() + "'");
         world.setStorm(!world.hasStorm());
 
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

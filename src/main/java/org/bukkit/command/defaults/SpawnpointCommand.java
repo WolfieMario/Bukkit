@@ -22,8 +22,10 @@ public class SpawnpointCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         Player player;
 
@@ -32,13 +34,13 @@ public class SpawnpointCommand extends VanillaCommand {
                 player = (Player) sender;
             } else {
                 sender.sendMessage("Please provide a player!");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
         } else {
             player = Bukkit.getPlayerExact(args[0]);
             if (player == null) {
                 sender.sendMessage("Can't find player " + args[0]);
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
         }
 
@@ -54,22 +56,24 @@ public class SpawnpointCommand extends VanillaCommand {
                     z = getInteger(sender, args[pos], MIN_COORD, MAX_COORD, true);
                 } catch(NumberFormatException ex) {
                     sender.sendMessage(ex.getMessage());
-                    return true;
+                    return SuccessType.getType(true, commandSuccess);
                 }
 
                 player.setBedSpawnLocation(new Location(world, x, y, z), true);
                 Command.broadcastCommandMessage(sender, "Set " + player.getDisplayName() + "'s spawnpoint to " + x + ", " + y + ", " + z);
+                commandSuccess = true;
             }
         } else if (args.length <= 1) {
             Location location = player.getLocation();
             player.setBedSpawnLocation(location, true);
             Command.broadcastCommandMessage(sender, "Set " + player.getDisplayName() + "'s spawnpoint to " + location.getX() + ", " + location.getY() + ", " + location.getZ());
+            commandSuccess = true;
         } else {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

@@ -30,11 +30,13 @@ public class EnchantCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String commandLabel, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         boolean force = false;
@@ -73,13 +75,14 @@ public class EnchantCommand extends VanillaCommand {
                                 if (integer == 0) {
                                     item.removeEnchantment(enchantment);
                                     Command.broadcastCommandMessage(sender, String.format("Removed %s on %s's %s", enchantmentName, player.getName(), itemName));
-                                    return true;
+                                    commandSuccess = true;
+                                    return SuccessType.getType(true, commandSuccess);
                                 }
 
                                 if (integer < minLevel || integer > maxLevel) {
                                     sender.sendMessage(String.format("Level for enchantment %s must be between %d and %d", enchantmentName, minLevel, maxLevel));
                                     sender.sendMessage("Specify 0 for level to remove an enchantment");
-                                    return true;
+                                    return SuccessType.getType(true, commandSuccess);
                                 }
 
                                 level = integer;
@@ -111,12 +114,14 @@ public class EnchantCommand extends VanillaCommand {
 
                             Command.broadcastCommandMessage(sender, String.format("Applied %s (Lvl %d) on %s's %s", enchantmentName, level, player.getName(), itemName), false);
                             sender.sendMessage(String.format("Enchanting succeeded, applied %s (Lvl %d) onto your %s", enchantmentName, level, itemName));
+
+                            commandSuccess = true;
                         }
                     }
                 }
             }
         }
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
      @Override

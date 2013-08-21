@@ -23,11 +23,13 @@ public class BanIpCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 1)  {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         // TODO: Ban Reason support
@@ -38,13 +40,14 @@ public class BanIpCommand extends VanillaCommand {
 
             if (player == null) {
                 sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-                return false;
+                return SuccessType.getType(false, commandSuccess);
             }
 
             processIPBan(player.getAddress().getAddress().getHostAddress(), sender);
         }
 
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     private void processIPBan(String ip, CommandSender sender) {

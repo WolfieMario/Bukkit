@@ -25,10 +25,12 @@ public class TimeCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
         if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "Incorrect usage. Correct usage:\n" + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         int value;
@@ -36,7 +38,7 @@ public class TimeCommand extends VanillaCommand {
         if (args[0].equals("set")) {
             if (!sender.hasPermission("bukkit.command.time.set")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to set the time");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
 
             if (args[1].equals("day")) {
@@ -52,10 +54,11 @@ public class TimeCommand extends VanillaCommand {
             }
 
             Command.broadcastCommandMessage(sender, "Set time to " + value);
+            commandSuccess = true;
         } else if (args[0].equals("add")) {
             if (!sender.hasPermission("bukkit.command.time.add")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to set the time");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
 
             value = getInteger(sender, args[1], 0);
@@ -65,11 +68,12 @@ public class TimeCommand extends VanillaCommand {
             }
 
             Command.broadcastCommandMessage(sender, "Added " + value + " to time");
+            commandSuccess = true;
         } else {
             sender.sendMessage("Unknown method. Usage: " + usageMessage);
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

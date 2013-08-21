@@ -15,11 +15,13 @@ public class TellCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 2)  {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         Player player = Bukkit.getPlayerExact(args[0]);
@@ -39,9 +41,11 @@ public class TellCommand extends VanillaCommand {
 
             sender.sendMessage("[" + sender.getName() + "->" + player.getName() + "] " + message);
             player.sendMessage(result);
+
+            commandSuccess = true;
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

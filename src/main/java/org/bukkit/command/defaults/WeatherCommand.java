@@ -24,11 +24,13 @@ public class WeatherCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         int duration = (300 + new Random().nextInt(600)) * 20;
@@ -55,7 +57,8 @@ public class WeatherCommand extends VanillaCommand {
             Command.broadcastCommandMessage(sender, "Changed weather to thundering " + (duration / 20) + " seconds.");
         }
 
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

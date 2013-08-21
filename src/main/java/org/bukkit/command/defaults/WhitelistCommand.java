@@ -24,30 +24,35 @@ public class WhitelistCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload")) {
-                if (badPerm(sender, "reload")) return true;
+                if (badPerm(sender, "reload")) return SuccessType.getType(true, commandSuccess);
 
                 Bukkit.reloadWhitelist();
                 Command.broadcastCommandMessage(sender, "Reloaded white-list from file");
-                return true;
+                commandSuccess = true;
+                return SuccessType.getType(true, commandSuccess);
             } else if (args[0].equalsIgnoreCase("on")) {
-                if (badPerm(sender, "enable")) return true;
+                if (badPerm(sender, "enable")) return SuccessType.getType(true, commandSuccess);
 
                 Bukkit.setWhitelist(true);
                 Command.broadcastCommandMessage(sender, "Turned on white-listing");
-                return true;
+                commandSuccess = true;
+                return SuccessType.getType(true, commandSuccess);
             } else if (args[0].equalsIgnoreCase("off")) {
-                if (badPerm(sender, "disable")) return true;
+                if (badPerm(sender, "disable")) return SuccessType.getType(true, commandSuccess);
 
                 Bukkit.setWhitelist(false);
                 Command.broadcastCommandMessage(sender, "Turned off white-listing");
-                return true;
+                commandSuccess = true;
+                return SuccessType.getType(true, commandSuccess);
             } else if (args[0].equalsIgnoreCase("list")) {
-                if (badPerm(sender, "list")) return true;
+                if (badPerm(sender, "list")) return SuccessType.getType(true, commandSuccess);
 
                 StringBuilder result = new StringBuilder();
 
@@ -60,28 +65,31 @@ public class WhitelistCommand extends VanillaCommand {
                 }
 
                 sender.sendMessage("White-listed players: " + result.toString());
-                return true;
+                commandSuccess = true;
+                return SuccessType.getType(true, commandSuccess);
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("add")) {
-                if (badPerm(sender, "add")) return true;
+                if (badPerm(sender, "add")) return SuccessType.getType(true, commandSuccess);
 
                 Bukkit.getOfflinePlayer(args[1]).setWhitelisted(true);
 
                 Command.broadcastCommandMessage(sender, "Added " + args[1] + " to white-list");
-                return true;
+                commandSuccess = true;
+                return SuccessType.getType(true, commandSuccess);
             } else if (args[0].equalsIgnoreCase("remove")) {
-                if (badPerm(sender, "remove")) return true;
+                if (badPerm(sender, "remove")) return SuccessType.getType(true, commandSuccess);
 
                 Bukkit.getOfflinePlayer(args[1]).setWhitelisted(false);
 
                 Command.broadcastCommandMessage(sender, "Removed " + args[1] + " from white-list");
-                return true;
+                commandSuccess = true;
+                return SuccessType.getType(true, commandSuccess);
             }
         }
 
         sender.sendMessage(ChatColor.RED + "Correct command usage:\n" + usageMessage);
-        return false;
+        return SuccessType.getType(false, commandSuccess);
     }
 
     private boolean badPerm(CommandSender sender, String perm) {

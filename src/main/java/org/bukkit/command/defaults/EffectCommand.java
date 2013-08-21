@@ -2,6 +2,7 @@ package org.bukkit.command.defaults;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -33,29 +34,35 @@ public class EffectCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
         if (!testPermission(sender)) {
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         if (args.length < 2) {
             sender.sendMessage(getUsage());
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         final Player player = sender.getServer().getPlayer(args[0]);
 
         if (player == null) {
             sender.sendMessage(ChatColor.RED + String.format("Player, %s, not found", args[0]));
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         if ("clear".equalsIgnoreCase(args[1])) {
-            for (PotionEffect effect : player.getActivePotionEffects()) {
+            Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
+            for (PotionEffect effect : activeEffects) {
                 player.removePotionEffect(effect.getType());
             }
             sender.sendMessage(String.format("Took all effects from %s", args[0]));
-            return true;
+            if (!activeEffects.isEmpty()) {
+                commandSuccess = true;
+            }
+            return SuccessType.getType(true, commandSuccess);
         }
 
         PotionEffectType effect = PotionEffectType.getByName(args[1]);
@@ -66,7 +73,7 @@ public class EffectCommand extends VanillaCommand {
 
         if (effect == null) {
             sender.sendMessage(ChatColor.RED + String.format("Effect, %s, not found", args[1]));
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         int duration = 600;
@@ -91,7 +98,7 @@ public class EffectCommand extends VanillaCommand {
         if (duration_temp == 0) {
             if (!player.hasPotionEffect(effect)) {
                 sender.sendMessage(String.format("Couldn't take %s from %s as they do not have the effect", effect.getName(), args[0]));
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
 
             player.removePotionEffect(effect);
@@ -103,7 +110,8 @@ public class EffectCommand extends VanillaCommand {
             broadcastCommandMessage(sender, String.format("Given %s (ID %d) * %d to %s for %d seconds", effect.getName(), effect.getId(), amplification, args[0], duration));
         }
 
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override
