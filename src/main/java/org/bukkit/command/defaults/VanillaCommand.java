@@ -2,6 +2,7 @@ package org.bukkit.command.defaults;
 
 import java.util.List;
 
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -17,6 +18,19 @@ public abstract class VanillaCommand extends Command {
     protected VanillaCommand(String name, String description, String usageMessage, List<String> aliases) {
         super(name, description, usageMessage, aliases);
     }
+
+    @Override
+    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
+        SuccessType success = executeVanilla(sender, currentAlias, args);
+
+        if (sender instanceof BlockCommandSender) {
+            ((BlockCommandSender) sender).setNextOutputState(success.commandSucceeded());
+        }
+
+        return success.executeSucceeded();
+    }
+
+    protected abstract SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args);
 
     public boolean matches(String input) {
         return input.equalsIgnoreCase(this.getName());
@@ -105,5 +119,36 @@ public abstract class VanillaCommand extends Command {
         }
 
         return string.toString();
+    }
+
+    protected enum SuccessType {
+        FULL_SUCCESS    (true,  true),
+        EXECUTE_SUCCESS (true,  false),
+        COMMAND_SUCCESS (false, true),
+        NO_SUCCESS      (false, false);
+
+        private final boolean execute;
+        private final boolean command;
+        SuccessType(boolean execute, boolean command) {
+            this.execute = execute;
+            this.command = command;
+        }
+
+        boolean executeSucceeded() {
+            return execute;
+        }
+        boolean commandSucceeded() {
+            return command;
+        }
+
+        static SuccessType getType(boolean execute, boolean command) {
+            if (execute) {
+                if (command) return FULL_SUCCESS;
+                else return EXECUTE_SUCCESS;
+            } else {
+                if (command) return COMMAND_SUCCESS;
+                else return NO_SUCCESS;
+            }
+        }
     }
 }

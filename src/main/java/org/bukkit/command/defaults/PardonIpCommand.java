@@ -21,21 +21,24 @@ public class PardonIpCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length != 1)  {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         if (BanIpCommand.ipValidity.matcher(args[0]).matches()) {
             Bukkit.unbanIP(args[0]);
             Command.broadcastCommandMessage(sender, "Pardoned ip " + args[0]);
+            commandSuccess = true;
         } else {
             sender.sendMessage("Invalid ip");
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

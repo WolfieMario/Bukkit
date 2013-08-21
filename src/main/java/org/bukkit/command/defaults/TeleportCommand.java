@@ -23,11 +23,13 @@ public class TeleportCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 1 || args.length > 4) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         Player player;
@@ -37,7 +39,7 @@ public class TeleportCommand extends VanillaCommand {
                 player = (Player) sender;
             } else {
                 sender.sendMessage("Please provide a player!");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
         } else {
             player = Bukkit.getPlayerExact(args[0]);
@@ -45,14 +47,14 @@ public class TeleportCommand extends VanillaCommand {
 
         if (player == null) {
             sender.sendMessage("Player not found: " + args[0]);
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         if (args.length < 3) {
             Player target = Bukkit.getPlayerExact(args[args.length - 1]);
             if (target == null) {
                 sender.sendMessage("Can't find player " + args[args.length - 1] + ". No tp.");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
             player.teleport(target, TeleportCause.COMMAND);
             Command.broadcastCommandMessage(sender, "Teleported " + player.getDisplayName() + " to " + target.getDisplayName());
@@ -64,7 +66,7 @@ public class TeleportCommand extends VanillaCommand {
 
             if (x == MIN_COORD_MINUS_ONE || y == MIN_COORD_MINUS_ONE || z == MIN_COORD_MINUS_ONE) {
                 sender.sendMessage("Please provide a valid location!");
-                return true;
+                return SuccessType.getType(true, commandSuccess);
             }
 
             playerLocation.setX(x);
@@ -74,7 +76,9 @@ public class TeleportCommand extends VanillaCommand {
             player.teleport(playerLocation);
             Command.broadcastCommandMessage(sender, String.format("Teleported %s to %.2f, %.2f, %.2f", player.getDisplayName(), x, y, z));
         }
-        return true;
+
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     private double getCoordinate(CommandSender sender, double current, String input) {

@@ -25,8 +25,12 @@ public class GameRuleCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
+
+        commandSuccess = true; // Never fails in vanilla with permission
 
         if (args.length > 0) {
             String rule = args[0];
@@ -46,12 +50,12 @@ public class GameRuleCommand extends VanillaCommand {
                 sender.sendMessage(ChatColor.RED + "No game rule called " + rule + " is available");
             }
 
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         } else {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
             sender.sendMessage("Rules: " + this.createString(getGameWorld(sender).getGameRules(), 0, ", "));
 
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
     }
 

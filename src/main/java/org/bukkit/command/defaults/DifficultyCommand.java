@@ -23,11 +23,13 @@ public class DifficultyCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length != 1 || args[0].length() == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         Difficulty difficulty = Difficulty.getByValue(getDifficultyForString(sender, args[0]));
@@ -49,7 +51,8 @@ public class DifficultyCommand extends VanillaCommand {
         }
 
         Command.broadcastCommandMessage(sender, "Set difficulty to " + difficulty.toString());
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     protected int getDifficultyForString(CommandSender sender, String name) {

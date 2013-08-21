@@ -21,9 +21,12 @@ public class StopCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
 
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
+
+        commandSuccess = true;
         Command.broadcastCommandMessage(sender, "Stopping the server..");
         Bukkit.shutdown();
 
@@ -34,7 +37,7 @@ public class StopCommand extends VanillaCommand {
             }
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

@@ -23,11 +23,13 @@ public class DefaultGameModeCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length == 0) {
             sender.sendMessage("Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         String modeArg = args[0];
@@ -52,7 +54,8 @@ public class DefaultGameModeCommand extends VanillaCommand {
         Bukkit.getServer().setDefaultGameMode(mode);
         Command.broadcastCommandMessage(sender, "Default game mode set to " + mode.toString().toLowerCase());
 
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

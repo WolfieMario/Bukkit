@@ -27,14 +27,16 @@ public class SpreadPlayersCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
         if (!testPermission(sender)) {
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         if (args.length < 6) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
         double x = getDouble(sender, args[0]);
         double z = getDouble(sender, args[1]);
@@ -42,13 +44,13 @@ public class SpreadPlayersCommand extends VanillaCommand {
 
         if (distance < 0.0D) {
             sender.sendMessage(ChatColor.RED + "Distance is too small.");
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         double range = getDouble(sender, args[3]);
         if (range < distance + 1.0D) {
             sender.sendMessage(ChatColor.RED + "Max range is too small.");
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         boolean teams = false;
@@ -56,7 +58,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
             teams = true;
         } else if (!"false".equalsIgnoreCase(args[4])) {
             sender.sendMessage(String.format(ChatColor.RED + "'%s' is not true or false", args[4]));
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         List<Player> players = Lists.newArrayList();
@@ -75,7 +77,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
         }
 
         if (world == null) {
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         double xRangeMin = x - range;
@@ -91,7 +93,8 @@ public class SpreadPlayersCommand extends VanillaCommand {
         if (locations.length > 1) {
             sender.sendMessage(String.format("(Average distance between %s is %s blocks apart after %s iterations)", teams ? "teams" : "players",  String.format("%.2f", distanceSpread), rangeSpread));
         }
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     private int range(World world, double distance, double xRangeMin, double zRangeMin, double xRangeMax, double zRangeMax, Location[] locations) {

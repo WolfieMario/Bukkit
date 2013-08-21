@@ -19,8 +19,10 @@ public class SaveCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         Command.broadcastCommandMessage(sender, "Forcing save..");
 
@@ -32,7 +34,8 @@ public class SaveCommand extends VanillaCommand {
 
         Command.broadcastCommandMessage(sender, "Save complete.");
 
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

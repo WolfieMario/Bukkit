@@ -19,24 +19,27 @@ public class KillCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
             EntityDamageEvent ede = new EntityDamageEvent(player, EntityDamageEvent.DamageCause.SUICIDE, 1000);
             Bukkit.getPluginManager().callEvent(ede);
-            if (ede.isCancelled()) return true;
+            if (ede.isCancelled()) return SuccessType.getType(true, commandSuccess);
 
             ede.getEntity().setLastDamageCause(ede);
             player.setHealth(0);
             sender.sendMessage("Ouch. That look like it hurt.");
+            commandSuccess = true;
         } else {
             sender.sendMessage("You can only perform this command as a player");
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

@@ -25,11 +25,13 @@ public class GameModeCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         String modeArg = args[0];
@@ -71,6 +73,7 @@ public class GameModeCommand extends VanillaCommand {
                     } else {
                         Command.broadcastCommandMessage(sender, "Set " + player.getName() + "'s game mode to " + mode.toString() + " mode");
                     }
+                    commandSuccess = true;
                 }
             } else {
                 sender.sendMessage(player.getName() + " already has game mode " + mode.getValue());
@@ -79,7 +82,7 @@ public class GameModeCommand extends VanillaCommand {
             sender.sendMessage("Can't find player " + playerArg);
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

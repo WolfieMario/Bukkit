@@ -15,14 +15,16 @@ public class PlaySoundCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
         if (!testPermission(sender)) {
-            return true;
+            return SuccessType.getType(true, commandSuccess);
         }
 
         if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
         final String soundArg = args[0];
         final String playerArg = args[1];
@@ -30,7 +32,7 @@ public class PlaySoundCommand extends VanillaCommand {
         final Player player = Bukkit.getPlayerExact(playerArg);
         if (player == null) {
             sender.sendMessage(ChatColor.RED + "Can't find player " + playerArg);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         final Location location = player.getLocation();
@@ -65,7 +67,7 @@ public class PlaySoundCommand extends VanillaCommand {
         if (location.distanceSquared(soundLocation) > fixedVolume * fixedVolume) {
             if (minimumVolume <= 0.0D) {
                 sender.sendMessage(ChatColor.RED + playerArg + " is too far away to hear the sound");
-                return false;
+                return SuccessType.getType(false, commandSuccess);
             }
 
             final double deltaX = x - location.getX();
@@ -82,6 +84,7 @@ public class PlaySoundCommand extends VanillaCommand {
             player.playSound(soundLocation, soundArg, (float) volume, (float) pitch);
         }
         sender.sendMessage(String.format("Played '%s' to %s", soundArg, playerArg));
-        return true;
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 }

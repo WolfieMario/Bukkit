@@ -22,8 +22,10 @@ public class BanListCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         // TODO: ips support
         StringBuilder message = new StringBuilder();
@@ -42,7 +44,9 @@ public class BanListCommand extends VanillaCommand {
 
         sender.sendMessage("There are " + banlist.length + " total banned players:");
         sender.sendMessage(message.toString());
-        return true;
+
+        commandSuccess = true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

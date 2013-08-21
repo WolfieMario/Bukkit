@@ -33,8 +33,10 @@ public class ClearCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
 
         Player player = null;
         if (args.length > 0) {
@@ -50,7 +52,7 @@ public class ClearCommand extends VanillaCommand {
                 Material material = Material.matchMaterial(args[1]);
                 if (material == null) {
                     sender.sendMessage(ChatColor.RED + "There's no item called " + args[1]);
-                    return false;
+                    return SuccessType.getType(false, commandSuccess);
                 }
 
                 id = material.getId();
@@ -62,13 +64,16 @@ public class ClearCommand extends VanillaCommand {
             int count = player.getInventory().clear(id, data);
 
             Command.broadcastCommandMessage(sender, "Cleared the inventory of " + player.getDisplayName() + ", removing " + count + " items");
+            if(count > 0) {
+                commandSuccess = true;
+            }
         } else if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Please provide a player!");
         } else {
             sender.sendMessage(ChatColor.RED + "Can't find player " + args[0]);
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

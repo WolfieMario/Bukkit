@@ -35,11 +35,13 @@ public class GiveCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if ((args.length < 2)) {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
         Player player = Bukkit.getPlayerExact(args[0]);
@@ -64,6 +66,8 @@ public class GiveCommand extends VanillaCommand {
                 player.getInventory().addItem(new ItemStack(material, amount, data));
 
                 Command.broadcastCommandMessage(sender, "Gave " + player.getName() + " some " + material.getId() + " (" + material + ")");
+
+                commandSuccess = true;
             } else {
                 sender.sendMessage("There's no item called " + args[1]);
             }
@@ -71,7 +75,7 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage("Can't find player " + args[0]);
         }
 
-        return true;
+        return SuccessType.getType(true, commandSuccess);
     }
 
     @Override

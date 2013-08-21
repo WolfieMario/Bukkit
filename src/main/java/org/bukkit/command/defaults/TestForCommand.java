@@ -2,6 +2,7 @@ package org.bukkit.command.defaults;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
 public class TestForCommand extends VanillaCommand {
@@ -13,14 +14,21 @@ public class TestForCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-        if (!testPermission(sender)) return true;
+    public SuccessType executeVanilla(CommandSender sender, String currentAlias, String[] args) {
+        boolean commandSuccess = false;
+
+        if (!testPermission(sender)) return SuccessType.getType(true, commandSuccess);
         if (args.length < 1)  {
             sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
-            return false;
+            return SuccessType.getType(false, commandSuccess);
         }
 
-        sender.sendMessage(ChatColor.RED + "/testfor is only usable by commandblocks with analog output.");
-        return true;
+        if (sender instanceof BlockCommandSender) {
+            commandSuccess = true;
+        } else {
+            sender.sendMessage(ChatColor.RED + "/testfor is only usable by commandblocks with analog output.");
+        }
+
+        return SuccessType.getType(true, commandSuccess);
     }
 }
